@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bw.mapper.MovieMapper">
+	
+	<select id="queryAll" resultType="com.bw.entity.Movie">
+		select m.*,group_concat(t.tname) tname from t_movie m
+		left join t_movie_type mt on m.mid=mt.mid 
+		left join t_type t on t.tid=mt.tid 
+		group by m.mid
+	</select>
+	
+	<select id="queryTypeList" resultType="com.bw.entity.Type">
+		select * from t_type
+	</select>
+	
+	<insert id="insertMovie" parameterType="com.bw.entity.Movie">
+		insert into t_movie 
+		(mname, introduction, price, startDate) 
+		values 
+		(#{mname}, #{introduction}, #{price}, #{startDate}) 
+		<selectKey order="AFTER" keyProperty="mid" resultType="int">
+			select last_insert_id() as mid
+		</selectKey>
+	</insert>
+	
+	<insert id="insertMovieType" parameterType="map">
+		insert into t_movie_type (mid, tid) values (#{mid}, #{tid})
+	</insert>
+	
+	
+	<select id="queryMovieById" parameterType="int" resultType="com.bw.entity.Movie">
+		select m.*,group_concat(t.tname) tname from t_movie m
+		left join t_movie_type mt on m.mid=mt.mid 
+		left join t_type t on t.tid=mt.tid where m.mid=#{0} 
+		group by m.mid
+	</select>
+	
+	<select id="queryMovieType" parameterType="int" resultType="com.bw.entity.Type">
+		select * from t_movie_type where mid=#{0}
+	</select>
+	
+	
+	<update id="updateMovie" parameterType="com.bw.entity.Movie">
+		update t_movie set mname=#{mname}, introduction=#{introduction}, price=#{price}, startDate=#{startDate} where mid=#{mid}
+	</update>
+	
+	
+	<delete id="deleteMovieType" parameterType="int">
+		delete from t_movie_type where mid=#{0}
+	</delete>
+	
+</mapper>
